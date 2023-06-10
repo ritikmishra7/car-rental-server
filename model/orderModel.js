@@ -15,32 +15,53 @@ const orderSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    images: [{
-        publicId: String,
-        url: String
-    }],
     total_price: {
         type: String,
         required: true
     },
-    status: {
+    license_number: {
         type: String,
-        enum: ['pending', 'approved', 'rejected'],
-        default: 'pending'
+    },
+    receipt: {
+        type: String,
+    },
+    // status: {
+    //     type: String,
+    //     enum: ['pending', 'approved', 'rejected'],
+    //     default: 'pending'
+    // },
+    from: {
+        type: String,
+        required: true
+    },
+    to: {
+        type: String,
+        required: true
+    },
+    date_of_booking: {
+        type: String,
+        required: true
+    },
+    date_of_return: {
+        type: String,
+        required: true
     },
     payment_status: {
         type: String,
         enum: ['pending', 'paid'],
         default: 'pending'
     },
-    payment_type: {
+    order_id: {
         type: String,
-        enum: ['cash', 'card'],
-        default: 'cash'
+        required: true,
+        index: true
     },
     payment_id: {
         type: String,
     },
+    signature: {
+        type: String,
+    }
 }, {
     timestamps: true
 });

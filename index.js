@@ -7,6 +7,7 @@ const cors = require('cors');
 const cloudinary = require('cloudinary').v2;
 const mainRouter = require('./routers/mainRouter');
 
+
 require('dotenv').config('./env');;
 
 //middlewares
@@ -18,7 +19,9 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
+
 app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true }));
 app.use(morgan('common'));
 app.use(cookieParser());
 
@@ -26,13 +29,12 @@ let origin = 'http://localhost:3000';
 if (process.env.NODE_ENV === 'production') {
     origin = process.env.CORS_ORIGIN;
 }
-
-
 app.use(cors({
     origin,
     credentials: true,
 }));
 
+//routes
 app.use('/api', mainRouter);
 
 

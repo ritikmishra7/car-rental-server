@@ -41,9 +41,11 @@ const vehicleSchema = mongoose.Schema({
     transmission: {
         type: String,
         enum: ['manual', 'automatic'],
+        default: 'manual',
     },
     mileage: {
         type: String,
+        default: '20kmpl'
     },
     owner: {
         type: mongoose.Schema.Types.ObjectId,

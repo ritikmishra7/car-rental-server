@@ -85,4 +85,45 @@ const addVehicle = async (req, res) => {
     }
 };
 
-module.exports = { handleFileUpload, deleteImage, addVehicle };
+const getVehicles = async (req, res) => {
+    try {
+        const { sort } = req.query;
+
+        let vehicles = [];
+        if (sort === 'low') {
+            vehicles = await vehicleModel.find({ status: 'available' }).sort({ price: -1 });
+        }
+        else if (sort === 'high') {
+            vehicles = await vehicleModel.find({ status: 'available' }).sort({ price: 1 });
+        }
+        else {
+            vehicles = await vehicleModel.find({ status: 'available' });
+        }
+        return res.send(success(200, vehicles));
+    } catch (error) {
+        return res.send(error(500, 'Internal Server Error'))
+    }
+}
+
+const getVehiclesOffer = async (req, res) => {
+    try {
+        const vehicles = await vehicleModel.find({ status: 'available' }).sort({ price: 1 }).limit(3);
+        return res.send(success(200, vehicles));
+    } catch (error) {
+        return res.send(error(500, 'Internal Server Error'))
+    }
+}
+
+const getVehicleById = async (req, res) => {
+
+    try {
+        const { id } = req.params;
+        const vehicle = await vehicleModel.findById(id);
+        return res.send(success(200, vehicle));
+    } catch (error) {
+        return res.send(error(500, 'Internal Server Error'))
+    }
+}
+
+
+module.exports = { handleFileUpload, deleteImage, addVehicle, getVehicles, getVehiclesOffer, getVehicleById };
