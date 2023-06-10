@@ -1,4 +1,5 @@
 const vehicleModel = require('../model/vehicleModel');
+const orderModel = require('../model/orderModel');
 const { success, error } = require('../utils/responseWrapper');
 const cloudinary = require('cloudinary').v2;
 const stream = require('stream');
@@ -125,5 +126,37 @@ const getVehicleById = async (req, res) => {
     }
 }
 
+function dateRangeOverlaps(a_start, a_end, b_start, b_end) {
+    console.log(a_start, a_end, b_start, b_end);
+    if (a_start <= b_start && b_start <= a_end) return true; // b starts in a
+    if (a_start <= b_end && b_end <= a_end) return true; // b ends in a
+    if (b_start < a_start && a_end < b_end) return true; // a in b
+    return false;
+}
 
-module.exports = { handleFileUpload, deleteImage, addVehicle, getVehicles, getVehiclesOffer, getVehicleById };
+const checkAvailability = async (req, res) => {
+    try {
+        const { vehicle_id, date_of_booking, date_of_return } = req.body;
+        const existingOrders = await orderModel.find({ vehicle: vehicle_id });
+
+
+        for (const order of existingOrders) {
+            const start_times1 = new Date(order.date_of_booking);
+            const end_times1 = new Date(order.date_of_return);
+            const start_times2 = new Date(date_of_booking);
+            const end_times2 = new Date(date_of_return);
+
+            if (dateRangeOverlaps(start_times1, end_times1, start_times2, end_times2)) {
+                return res.send(success(200, { available: false, message: `Car is reserved from ${order.date_of_booking} to ${order.date_of_return}` }));
+            }
+
+        }
+        return res.send(success(200, { available: true }));
+    }
+    catch (e) {
+        console.log(e);
+        return res.send(error(500, 'Internal Server Error'))
+    }
+}
+
+module.exports = { handleFileUpload, deleteImage, addVehicle, getVehicles, getVehiclesOffer, getVehicleById, checkAvailability };
